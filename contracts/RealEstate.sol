@@ -4,6 +4,7 @@ import "../node_modules/@openzeppelin/contracts/utils/Counters.sol";
 import "../node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "../node_modules/@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 
+
 contract RealEstate is ERC721URIStorage{
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
