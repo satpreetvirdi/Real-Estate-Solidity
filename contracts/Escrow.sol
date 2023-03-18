@@ -50,4 +50,47 @@ contract Escrow {
         escrowAmount[_nftId] = _escrowAmount;
         buyer[_nftId] = _buyer;
     }
+    function depositEarnest(uint256 _nftId)public payable onlyBuyer(_nftId){
+        require(msg.value >= escrowAmount[_nftId]);
+    }   
+
+    receive() external payable {}
+    function getBalance() public view returns (uint256){
+        return address(this).balance;
+    }
+
+    function updateInspectionStatus(uint256 _nftId, bool _passed) public onlyInspector{
+        inspectionPassed[_nftId] = _passed;
+    }    
+    
+    function approveSale(uint _nftId) public {
+        approval[_nftId][msg.sender] = true;
+    }
+    // Flow of Finalize Sale Func
+    //  1. Inspection status
+    //  2. Sale Authorized
+    //  3. Fund == Corect
+    //  4. Sends NFT to Buyer
+    //  5. Sends Funds to Seller
+    function finalizeSale(uint256 _nftId) public {
+        require(inspectionPassed[_nftId]);
+        require(approval[_nftId][buyer[_nftId]]);        
+        require(approval[_nftId][seller]);
+        require(approval[_nftId][lender]);
+        require(address(this).balance >= purchasePrice[_nftId]);
+        (bool success, ) = payable(seller).call{value: address(this).balance}("");
+        require(success);
+
+        isListed[_nftId] = false;
+
+        IERC721(nftAddress).transferFrom(address(this),buyer[_nftId], _nftId);
+
+    }   
+     function cancelSale(uint256 _nftID) public {
+        if (inspectionPassed[_nftID] == false) {
+            payable(buyer[_nftID]).transfer(address(this).balance);
+        } else {
+            payable(seller).transfer(address(this).balance);
+        }
+    }
 }
