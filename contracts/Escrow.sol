@@ -1,5 +1,5 @@
 //SPDX-License-Identifier: Unlicense
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.9;
 
 interface IERC721 {
     function transferFrom(
@@ -78,7 +78,7 @@ contract Escrow {
         require(approval[_nftId][seller]);
         require(approval[_nftId][lender]);
         require(address(this).balance >= purchasePrice[_nftId]);
-        (bool success, ) = payable(seller).call{value: address(this).balance}("");
+        (bool success, ) = payable(seller).call{value: address(this).balance}("x");
         require(success);
 
         isListed[_nftId] = false;
